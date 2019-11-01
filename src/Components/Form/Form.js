@@ -9,7 +9,7 @@ export default class Form extends Component {
             name: "",
             price: "",
             imgurl: "",
-            // previewimg: ""
+            previewimg: "https://wanowi.com/public/uploads/products/list/product-default.jpg"
         }
     }
 
