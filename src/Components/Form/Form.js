@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 // import './Form.css'
-// import axios from 'axios';
+import axios from 'axios';
 
 export default class Form extends Component {
     constructor() {
@@ -40,6 +40,25 @@ export default class Form extends Component {
         if(oldpropsobject.location.pathname !== this.props.location.pathname) {
             this.clearInput();
         }
+    }
+
+    getInventory = () => {
+        axios
+        .get('/api/inventory')
+        .then(res => this.setState({inventory: res.data}))
+        .catch(err => console.log(err))
+    }
+
+    selectedEdit = id => {
+        axios
+        .get(`/api/product/${id}`)
+        .then(res => {
+            const {name, price, img} = res.data[0];
+            this.setState({name, price, imgurl: img, previewImg: img})
+        })
+        .catch(err => {
+            console.log(err);
+        })
     }
 
     clearInput = () => {

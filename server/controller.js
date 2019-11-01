@@ -12,6 +12,16 @@ module.exports = {
         db.get_product(id)
         .then(product => res.status(200).send(product))
         .catch(err => console.log(err))
+    },
+
+    addProduct: (req, res) => {
+        const db = req.app.get("db"),
+        {name, price, imgurl} = req.body;
+        db.add_product(name, price, imgurl)
+        .then(products => {
+            res.sendStatus(200);
+        })
+        .catch(err => console.log(err))
     }
 
 }
