@@ -22,6 +22,27 @@ module.exports = {
             res.sendStatus(200);
         })
         .catch(err => console.log(err))
+    },
+
+    deleteProduct: (req, res) => {
+        const db = req.app.get("db"),
+          { id } = req.params;
+        db.delete_product(id)
+          .then(() => {
+            res.sendStatus(200);
+          })
+          .catch(err => res.status(500).send(err));
+      },
+
+    editProduct: (req, res) => {
+        const db = req.app.get("db"),
+        {id} = req.params,
+        {name, price, imgurl} = req.body;
+        db.edit_product(id, name, price, imgurl)
+        .then(() => {
+            res.sendStatus(200);
+        })
+        .catch(err => res.status(500).send(err))
     }
 
 }

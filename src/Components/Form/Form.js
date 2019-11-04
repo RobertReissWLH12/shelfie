@@ -1,101 +1,180 @@
-import React, { Component } from 'react';
-// import './Form.css'
-import axios from 'axios';
+import React, { Component } from "react";
+// import "./Form.css";
+import axios from "axios";
 
-export default class Form extends Component {
-    constructor() {
-        super();
-        this.state = {
-            name: "",
-            price: "",
-            imgurl: "",
-            previewimg: "https://wanowi.com/public/uploads/products/list/product-default.jpg"
-        }
+class Form extends Component {
+  constructor() {
+    super();
+    this.state = {
+      name: "",
+      price: "",
+      imgurl: "",
+      previewimg:
+        "https://wanowi.com/public/uploads/products/list/product-default.jpg"
+    };
+  }
+
+  componentDidMount() {
+    console.log(this.state);
+    if (this.state.imgurl) {
+      this.setState({ previewimg: this.state.imgurl });
     }
-
-    handleNameChange = name => {
-    this.setState({name})
+    if (this.props.location.state) {
+      this.selectedEdit(this.props.location.state.id);
     }
+  }
 
-    handlePriceChange = price => {
-        this.setState({price})
+  componentDidUpdate(oldprops) {
+    if (oldprops.location.pathname !== this.props.location.pathname) {
+      this.clearInput();
     }
+  }
 
-    handleImageChange = imgurl => {
-        imgurl ? this.setState({imgurl: imgurl, previewimg: imgurl}) : this.setState({
-            previewImg: "https://wanowi.com/public/uploads/products/list/product-default.jpg"
-        })
-    }
+  getInventory = () => {
+    axios
+      .get("/api/inventory")
+      .then(res => this.setState({ inventory: res.data }))
+      .catch(err => console.log(err));
+  };
 
-    componentDidMount() {
-        if(this.state.imgurl) {
-            this.setState({previewimg: this.state.imgurl})
-        }
-        if(this.props.location.state) {
-            this.selectedEdit(this.props.location.state.id)
-        }
-    }
+  selectedEdit = id => {
+    axios
+      .get(`/api/product/${id}`)
+      .then(res => {
+        const { name, price, img } = res.data[0];
+        this.setState({
+          name,
+          price,
+          imgurl: img,
+          previewimg: img
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
 
-    componentDidUpdate(oldpropsobject) {
-        if(oldpropsobject.location.pathname !== this.props.location.pathname) {
-            this.clearInput();
-        }
-    }
+  editItem = () => {
+    console.log(this.state);
+    axios
+      .put(`/api/product/${this.props.location.state.id}`, {
+        name: this.state.name,
+        price: this.state.price,
+        imgurl: this.state.imgurl
+      })
+      .then(this.getInventory())
+      .catch(err => console.log(err));
+  };
 
-    getInventory = () => {
-        axios
-        .get('/api/inventory')
-        .then(res => this.setState({inventory: res.data}))
-        .catch(err => console.log(err))
-    }
+  handleNameChange = name => {
+    this.setState({ name });
+    // console.log(`this.state.name: ${this.state.name}`);
+  };
 
-    selectedEdit = id => {
-        axios
-        .get(`/api/product/${id}`)
-        .then(res => {
-            const {name, price, img} = res.data[0];
-            this.setState({name, price, imgurl: img, previewImg: img})
-        })
-        .catch(err => {
-            console.log(err);
-        })
-    }
+  handlePriceChange = price => {
+    this.setState({ price });
+  };
 
-    clearInput = () => {
-        this.setState({name: "", price:"", imgurl:""})
-    }
+  onError = () => {
+    this.setState({
+      previewimg:
+        "https://wanowi.com/public/uploads/products/list/product-default.jpg"
+    });
+  };
 
+  handleImageChange = imgurl => {
+    imgurl
+      ? this.setState({ imgurl: imgurl, previewimg: imgurl })
+      : this.setState({
+          previewimg:
+            "https://wanowi.com/public/uploads/products/list/product-default.jpg"
+        });
+    // console.log(`this.state.imgurl: ${this.state.imgurl}`);
+  };
 
-    render() {
-        return (
-            <div className="formDiv">
-                <form onSubmit={e => {
-                    e.preventDefault();
-                    this.props.location.state ? this.editItem() : this.addToDatabase();
-                    window.location.replace("/");
-                }}
-                >
-                    <img className="previewImg" alt="preview" src={this.state.previewimg} onError={this.onError} />
-                    <input className="formInput" value={this.state.name} placeholder="Product Name" onChange={e => this.handleNameChange(e.target.value)} />
-                    <input className="formInput" value={this.state.price} placeholder="Price" onChange={e => this.handlePriceChange(e.target.value)} />
-                    <input className="formInput" value={this.state.imgurl} placeholder="Place Image URL Here" onChange={e => this.handleImageChange(e.target.value)} />
-                    <div className="form-button-container">
-                        <button className="formButton" type="button" onClick={() => this.clearInput()}>
-                            Cancel
-                        </button>
-                        {!this.props.location.state ? (
-                            <button className="formButton" type="submit">
-                                Add to Inventory
-                            </button>
-                        ) : (
-                                <button className="formButton" type="submit">
-                                    Save Changes
-                            </button>
-                            )}
-                    </div>
-                </form>
-                <h2>Form</h2>
-            </div>
-        )
-    }
+  addToDatabase = () => {
+    const newProduct = {
+      name: this.state.name,
+      price: this.state.price,
+      imgurl: this.state.imgurl
+        ? this.state.imgurl
+        : "https://wanowi.com/public/uploads/products/list/product-default.jpg"
+    };
+    console.log(newProduct);
+
+    axios
+      .post("/api/product", newProduct)
+      .then(res => {
+        console.log(res);
+        this.clearInput();
+      })
+      .catch(err => console.log(`client side err: ${err}`));
+    this.clearInput();
+  };
+
+  clearInput = () => {
+    this.setState({ name: "", price: "", imgurl: "" });
+  };
+
+  //RENDER
+
+  render() {
+    return (
+      <div className="formDiv">
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            this.props.location.state ? this.editItem() : this.addToDatabase();
+            window.location.replace("/");
+          }}
+        >
+          <img
+            className="previewimg"
+            alt="preview"
+            src={this.state.previewimg}
+            onError={this.onError}
+          />
+          <input
+            className="formInput"
+            value={this.state.name}
+            placeholder="product name"
+            onChange={e => this.handleNameChange(e.target.value)}
+          />
+
+          <input
+            className="formInput"
+            value={this.state.price}
+            placeholder="price, full dollar amount only"
+            onChange={e => this.handlePriceChange(e.target.value)}
+          />
+          <input
+            className="formInput"
+            value={this.state.imgurl}
+            placeholder="copy and paste image url here"
+            onChange={e => this.handleImageChange(e.target.value)}
+          />
+          <div className="formButtonDiv">
+            <button
+              className="formButton"
+              type="button"
+              onClick={() => this.clearInput()}
+            >
+              Clear
+            </button>
+            {!this.props.location.state ? (
+              <button className="formButton" type="submit">
+                Add to Inventory
+              </button>
+            ) : (
+              <button className="formButton" type="submit">
+                Save Changes
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
+    );
+  }
 }
+
+export default Form;
