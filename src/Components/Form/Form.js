@@ -108,7 +108,7 @@ class Form extends Component {
         console.log(res);
         this.clearInput();
       })
-      .catch(err => console.log(`client side err: ${err}`));
+      .catch(err => console.log(`Front end error: ${err}`));
     this.clearInput();
   };
 
@@ -144,13 +144,13 @@ class Form extends Component {
           <input
             className="formInput"
             value={this.state.price}
-            placeholder="price, full dollar amount only"
+            placeholder="price"
             onChange={e => this.handlePriceChange(e.target.value)}
           />
           <input
             className="formInput"
             value={this.state.imgurl}
-            placeholder="copy and paste image url here"
+            placeholder="Copy and Paste URL Here!"
             onChange={e => this.handleImageChange(e.target.value)}
           />
           <div className="formButtonDiv">
