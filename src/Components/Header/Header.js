@@ -1,13 +1,29 @@
-import React, {Component} from 'react';
+import React from 'react';
+// import "./Header.css"
+import {Link} from "react-router-dom"
+// import shelfie_icon from " "
 
-export default class Header extends Component {
     //  NO STATE!!!
+function Header() {
+    return (
+        <nav>
+            <Link className="link iconTitle" to="/">
+                {/* <img src={shelfie_icon}/> */}
+                <span className="title">SHELFIE</span>
+            </Link>
 
-    render() {
-        return (
-            <div>
-            <h2>Header</h2>
-            </div>
-        )
-    }
+            <button className="headerButton">
+                <Link className="link" to="/">
+                    Dashboard
+                </Link>
+            </button>
+            <button className="headerButton">
+                <Link className="link" to="/add">
+                    Add Inventory
+                </Link>
+            </button>
+        </nav>
+    )
 }
+
+export default Header;

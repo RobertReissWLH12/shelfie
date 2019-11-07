@@ -9,11 +9,11 @@ function App() {
   return (
     <div className="App">
       <Header />
-      {/* <Switch>
+      <Switch>
         <Route component={Dashboard} exact path='/' />
         <Route component={Form} path="/add" />
         <Route component={Form} path="/edit/:id" />
-      </Switch> */}
+      </Switch>
     </div>
   );
 }

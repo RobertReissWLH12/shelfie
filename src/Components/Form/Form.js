@@ -62,7 +62,7 @@ class Form extends Component {
         price: this.state.price,
         imgurl: this.state.imgurl
       })
-      .then(this.getInventory())
+      .then(result => this.getInventory())
       .catch(err => console.log(err));
   };
 
@@ -106,6 +106,7 @@ class Form extends Component {
       .post("/api/product", newProduct)
       .then(res => {
         console.log(res);
+        this.getInventory()
         this.clearInput();
       })
       .catch(err => console.log(`Front end error: ${err}`));
