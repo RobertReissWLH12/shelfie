@@ -6,6 +6,8 @@ export default class Dashboard extends Component {
     constructor() {
         super();
         this.state = {inventory: [] }
+
+        this.getInventory = this.getInventory.bind(this)
     }
 
     componentDidMount() {
@@ -14,7 +16,7 @@ export default class Dashboard extends Component {
 
     // METHODS
 
-    getInventory = () => {
+    getInventory() {
         axios
         .get("/api/inventory")
         .then(res => this.setState({inventory: res.data}))
@@ -23,7 +25,7 @@ export default class Dashboard extends Component {
 
     deleteProduct = id => {
         axios
-        .delete(`/apiproduct/${id}`)
+        .delete(`/api/product/${id}`)
         .then(() => {
             this.getInventory();
         })
